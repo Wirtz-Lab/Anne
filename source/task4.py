@@ -42,11 +42,12 @@ def precision_matrix(percent_train_file, percent_test_file):
     avg_precision.name = 'average'
     precision_df = pd.concat([precision_df, avg_precision.to_frame().T])
     precision_df = precision_df.fillna(0)
-
-    print(precision_df)
+    
+    # print("Precision Matrix:")
+    # print(precision_df)
 
     # Excel Formatting
-    output_file_path = './Precision.xlsx'  
+    output_file_path = './Outputs/Precision.xlsx'  
     with pd.ExcelWriter(output_file_path, engine='openpyxl') as writer:
         precision_df.to_excel(writer, sheet_name='Precision', index=True, header=True)
     wb = load_workbook(output_file_path)
@@ -62,6 +63,8 @@ def precision_matrix(percent_train_file, percent_test_file):
     for col_num in range(1, ws.max_column + 1):  # Iterate over all columns
         ws.cell(row=precision_df.index.size + 1, column=col_num).font = Font(bold=True)
 
-    wb.save(output_file_path)
+    wb.save(output_file_path) 
+    
+    return # Void return
     
     

@@ -59,14 +59,18 @@ def merge_matrix(sum_matrix_file, isTest):
     merged_df['reticular_dermis'] = np.nan; merged_df.loc['reticular_dermis',:] = np.nan
 
     merged_df['no_label'] = np.nan; merged_df.loc['no_label',:] = np.nan
-
-    print(merged_df)
+    
+    # if(isTest == True):
+    #     print("Merged Matrix TEST:")
+    # else:
+    #     print("Merged Matrix TRAIN:")
+    # print(merged_df)
 
     # Excel Formatting
     output_title = 'Merged_matrix_train'  
     if(isTest == True):
         output_title = 'Merged_matrix_test' 
-    output_file_path = f'./{output_title}.xlsx'
+    output_file_path = f'./Outputs/{output_title}.xlsx'
     with pd.ExcelWriter(output_file_path, engine='openpyxl') as writer:
         merged_df.to_excel(writer, sheet_name=f'{output_title}', index=True, header=True)
     wb = load_workbook(output_file_path)
@@ -84,6 +88,6 @@ def merge_matrix(sum_matrix_file, isTest):
         
     wb.save(output_file_path)
     
-    return output_file_path
+    return output_file_path # Return the file path
         
 

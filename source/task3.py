@@ -50,14 +50,17 @@ def percent_matrix(merged_matrix_file, isTest):
 
     percentage_df = df.div(row_sums, axis=0) 
 
-    print("Percentage Matrix:")
-    print(percentage_df)
+    # if(isTest == True):
+    #     print("Percentage Matrix TEST:")
+    # else:
+    #     print("Percentage Matrix TRAIN:")
+    # print(percentage_df)
 
     # Excel Formatting
     output_title = 'Percentage_matrix_train'  
     if(isTest == True):
         output_title = 'Percentage_matrix_test' 
-    output_file_path = f'./{output_title}.xlsx'
+    output_file_path = f'./Outputs/{output_title}.xlsx'
     with pd.ExcelWriter(output_file_path, engine='openpyxl') as writer:
         percentage_df.to_excel(writer, sheet_name=f'{output_title}', index=True, header=True)
     wb = load_workbook(output_file_path)
@@ -75,4 +78,4 @@ def percent_matrix(merged_matrix_file, isTest):
     # save formatting changes
     wb.save(output_file_path)
     
-    return output_file_path
+    return output_file_path # Return the file path
