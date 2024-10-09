@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 from openpyxl import load_workbook
 from openpyxl.styles import PatternFill, Font
+import os
 
 #bg colors
 bg_colors = {
@@ -39,7 +40,7 @@ def red_text(ws, merged_df, red_headers):
 
 ###################################################################
 
-def merge_matrix(sum_matrix_file, isTest):
+def merge_matrix(sum_matrix_file, isTest, dst='./Outputs/'):
     df = pd.read_excel(sum_matrix_file, sheet_name=0, index_col=0, header=0)
     merged_df = df.copy() # cp the dataframe
 
@@ -70,7 +71,7 @@ def merge_matrix(sum_matrix_file, isTest):
     output_title = 'Merged_matrix_train'  
     if(isTest == True):
         output_title = 'Merged_matrix_test' 
-    output_file_path = f'./Outputs/{output_title}.xlsx'
+    output_file_path = os.path.join(dst,f'{output_title}.xlsx')
     with pd.ExcelWriter(output_file_path, engine='openpyxl') as writer:
         merged_df.to_excel(writer, sheet_name=f'{output_title}', index=True, header=True)
     wb = load_workbook(output_file_path)

@@ -1,5 +1,5 @@
 import pandas as pd
-import numpy as np
+import os
 from openpyxl import load_workbook
 from openpyxl.styles import PatternFill, Font
 
@@ -43,7 +43,7 @@ def red_text(ws, percentage_df):
         
 ###############################################################################################
 
-def percent_matrix(merged_matrix_file, isTest):
+def percent_matrix(merged_matrix_file, isTest, dst):
     df = pd.read_excel(merged_matrix_file, sheet_name=0, index_col=0, header=0)
 
     row_sums = df.sum(axis = 1)
@@ -60,7 +60,7 @@ def percent_matrix(merged_matrix_file, isTest):
     output_title = 'Percentage_matrix_train'  
     if(isTest == True):
         output_title = 'Percentage_matrix_test' 
-    output_file_path = f'./Outputs/{output_title}.xlsx'
+    output_file_path = os.path.join(dst,f'{output_title}.xlsx')
     with pd.ExcelWriter(output_file_path, engine='openpyxl') as writer:
         percentage_df.to_excel(writer, sheet_name=f'{output_title}', index=True, header=True)
     wb = load_workbook(output_file_path)

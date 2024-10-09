@@ -1,6 +1,6 @@
 # TASK 4
 import pandas as pd
-import numpy as np
+import os
 from openpyxl import load_workbook
 from openpyxl.styles import PatternFill, Font
 
@@ -23,13 +23,11 @@ def fill_rows_cols(ws, precision_df, headers, fill_color):
 
 ###################################################################
 
-def precision_matrix(percent_train_file, percent_test_file):
+def precision_matrix(percent_train_file, percent_test_file, dst):
     df_train = pd.read_excel(percent_train_file, sheet_name=0, index_col=0, header=0)
     df_test = pd.read_excel(percent_test_file, sheet_name=0, index_col=0, header=0)
 
     precision_df = pd.DataFrame(0.0, columns = ['Train', 'Test'], index = df_test.index)
-
-    print(df_train)
 
     # Extracting diagonal values
     for i in range(min(len(df_train), len(df_train.columns))):
@@ -47,7 +45,7 @@ def precision_matrix(percent_train_file, percent_test_file):
     # print(precision_df)
 
     # Excel Formatting
-    output_file_path = './Outputs/Precision.xlsx'  
+    output_file_path = os.path.join(dst,'Precision.xlsx')
     with pd.ExcelWriter(output_file_path, engine='openpyxl') as writer:
         precision_df.to_excel(writer, sheet_name='Precision', index=True, header=True)
     wb = load_workbook(output_file_path)

@@ -3,7 +3,7 @@ import os
 
 import pandas as pd
 
-def sum_matrix(source_file):
+def sum_matrix(source_file, dst = '../../Outputs'):
     df_dict = pd.read_excel(source_file, sheet_name=None, index_col=0, header=3)
 
     sum_dict = {}
@@ -46,7 +46,6 @@ def sum_matrix(source_file):
     # print(train_sum_df)
 
     # # Excel Formatting / Save DFs
-    dst = '.././Outputs'
     if not os.path.exists(dst): os.mkdir(dst)
     train_output_file_path = os.path.join(dst,'Sum_matrix_train.xlsx')
     with pd.ExcelWriter(train_output_file_path, engine='openpyxl') as writer:
