@@ -1,16 +1,15 @@
 #Evaluating Skin Model Performance
-
 import os, glob
 import task1
 import task2
 import task3
 import task4
 
-dltlid = 92
+dltlid = 228
 
 src = r'\\10.99.68.54\Digital pathology image lib\HubMap Skin TMC project\240418_DLTL_master\DLTL_v{dltlid:d}\TrainCNN MDL\performance metrics'.format(dltlid = dltlid)
 source_file = glob.glob(os.path.join(src,'net_*-01_trainingConfusionMetric.xlsx'))[0];
-dst = os.path.join(src,'metrics')
+dst = os.path.join(src,'metrics2')
 if not os.path.exists(dst): os.mkdir(dst)
 
 # Task 1: Sum matrix
