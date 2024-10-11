@@ -1,6 +1,8 @@
 import os, glob
 import pandas as pd
 import numpy as np
+from tqdm import tqdm
+
 def sum_matrix(source_file):
     df_dict = pd.read_excel(source_file, sheet_name=None, index_col=0, header=3)
     try:
@@ -87,14 +89,21 @@ def confusion_matrix_2_metrics(source_file):
     test_recall.replace(0, np.nan).mean().round(5).item() * 100]
 
 if __name__ == "__main__":
-    dltlids = [42, 228]
+    # dltlids = [42, 228]
+    xl = pd.read_excel(
+        r"\\10.99.68.54\Digital pathology image lib\HubMap Skin TMC project\240418_DLTL_master\DLTL_version_list_241007.xlsx")
+    dltlids = xl['Model_ID'].sort_values()
+
     metrics = []
-    for dltlid in dltlids: #iterate deep learning model versions
+    for dltlid in tqdm(dltlids): #iterate deep learning model versions
         try:
             # define input and output path
             src = r'\\10.99.68.54\Digital pathology image lib\HubMap Skin TMC project\240418_DLTL_master\DLTL_v{dltlid:d}\TrainCNN MDL\performance metrics'.format(
                 dltlid=dltlid)
             source_file = glob.glob(os.path.join(src, 'net_*-01_trainingConfusionMetric.xlsx'))[0]
+            if source_file is None:
+
+                raise ValueError("no confusion matrix found")
             # execute the conversion
             metric = confusion_matrix_2_metrics(source_file)
             metrics.append([dltlid]+metric)
