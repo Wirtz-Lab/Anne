@@ -100,7 +100,8 @@ if __name__ == "__main__":
             metrics.append([dltlid]+metric)
         except:
             metrics.append([dltlid, 0, 0, 0, 0])
-        # save as a csv for summary
-        dst = os.path.join(src, 'output')
-        if not os.path.exists(dst): os.mkdir(dst)
-        pd.DataFrame(metrics).to_csv(os.path.join(dst,'tmp.csv'), index=False)
+
+        # dst = os.path.join(src, 'output')
+        # if not os.path.exists(dst): os.mkdir(dst)
+    # save as a csv for summary
+    pd.DataFrame(metrics).to_csv('tmp.csv', index=False)
