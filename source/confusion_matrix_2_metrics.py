@@ -30,8 +30,8 @@ def sum_matrix(source_file):
                     if (col, row) not in sum_dict:
                         sum_dict[(col, row)] = 0
                     sum_dict[(col, row)] += cell_value
-    sum_df = pd.DataFrame(0, columns=df.columns, index=df.index, dtype='int64')
-    test_sum_df = pd.DataFrame(0, columns=df.columns, index=df.index, dtype='int64')
+    sum_df = pd.DataFrame(0, columns= df.columns, index=df.index, dtype='int64')
+    test_sum_df = pd.DataFrame(0, columns= df.columns, index=df.index, dtype='int64')
 
     for (col, row), total in sum_dict.items():
         sum_df.at[row, col] = total
