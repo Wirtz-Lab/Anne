@@ -62,6 +62,8 @@ def merge_classes(df):
     merged_df = sort_sum_by_toi(merged_df, toi)
     toi = ['ecm', 'inflammation', 'large_interstitial', 'papillary_dermis', 'reticular_dermis']
     merged_df = sort_sum_by_toi(merged_df, toi)
+    merged_df = merged_df.drop('noLabel', axis=0)
+    merged_df = merged_df.drop('noLabel', axis=1)
     return merged_df
 
 def percent_matrix(df):
@@ -92,7 +94,9 @@ if __name__ == "__main__":
     # dltlids = [42, 228]
     xl = pd.read_excel(
         r"\\10.99.68.54\Digital pathology image lib\HubMap Skin TMC project\240418_DLTL_master\DLTL_version_list_241007.xlsx")
-    dltlids = xl['Model_ID'].sort_values()
+    dltlids = xl.sort_values('Model_ID')
+    # models that has condition defined but yet has score
+    # dltlids = dltlids['Model_ID'][dltlids['se_radius'].notnull() & dltlids['f1score'].isnull()]
 
     metrics = []
     for dltlid in tqdm(dltlids): #iterate deep learning model versions
@@ -100,10 +104,10 @@ if __name__ == "__main__":
             # define input and output path
             src = r'\\10.99.68.54\Digital pathology image lib\HubMap Skin TMC project\240418_DLTL_master\DLTL_v{dltlid:d}\TrainCNN MDL\performance metrics'.format(
                 dltlid=dltlid)
-            source_file = glob.glob(os.path.join(src, 'net_*-01_trainingConfusionMetric.xlsx'))[0]
-            if source_file is None:
-
-                raise ValueError("no confusion matrix found")
+            source_file = glob.glob(os.path.join(src, 'net_*-01_trainingConfusionMetric.xlsx'))
+            if len(source_file) <1:
+                metrics.append([dltlid, 'noxl', 'noxl', 'noxl', 'noxl'])
+            source_file = source_file[0]
             # execute the conversion
             metric = confusion_matrix_2_metrics(source_file)
             metrics.append([dltlid]+metric)
