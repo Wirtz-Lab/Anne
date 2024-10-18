@@ -96,9 +96,9 @@ if __name__ == "__main__":
     xl = pd.read_excel(
         r"\\10.99.68.54\Digital pathology image lib\HubMap Skin TMC project\240418_DLTL_master\DLTL_version_list_241007.xlsx")
     dltlids = xl.sort_values('Model_ID')
-    dltlids = dltlids['Model_ID']
+    # dltlids = dltlids['Model_ID']
     # models that has condition defined but yet has score
-    # dltlids = dltlids['Model_ID'][dltlids['se_radius'].notnull() & dltlids['f1score'].isnull()]
+    dltlids = dltlids['Model_ID'][dltlids['se_radius'].notnull() & dltlids['f1score'].isnull()]
 
     metrics = []
     for dltlid in tqdm(dltlids): #iterate deep learning model versions
@@ -113,12 +113,14 @@ if __name__ == "__main__":
         metric = confusion_matrix_2_metrics(source_file[0])
 
         # attach metadata
-        pth = r"\\10.99.68.54\Digital pathology image lib\HubMap Skin TMC project\240418_DLTL_master\DLTL_v{dltlid:d}\dltlRunParam.mat"
-        mat = loadmat(pth)
-        trainingtime = mat['tEnd']
+        pth = r"\\10.99.68.54\Digital pathology image lib\HubMap Skin TMC project\240418_DLTL_master\DLTL_v{dltlid:d}\dltlRunParam.mat".format(
+            dltlid=dltlid)
         try:
-            computername = mat['computername']
+            mat = loadmat(pth)
+            trainingtime = mat['tEnd'][0][0]
+            computername = mat['computername'][0]
         except:
+            trainingtime = 'none'
             computername = 'none'
         windowtime = time.ctime(os.path.getctime(source_file[0]))
         unixtime = os.path.getctime(source_file[0])
@@ -128,4 +130,4 @@ if __name__ == "__main__":
         # dst = os.path.join(src, 'output')
         # if not os.path.exists(dst): os.mkdir(dst)
     # save as a csv for summary
-    pd.DataFrame(metrics,columns=['dltlid','trainingtime','computername','wintime','unixtime','p_train','r_train','p_test','r_test']).to_csv('tmp.csv',index=False)
+    pd.DataFrame(metrics,columns=['dltlid','trainingtime','computername','win_time','unix_time','p_train','r_train','p_test','r_test']).to_csv('tmp.csv',index=False)
