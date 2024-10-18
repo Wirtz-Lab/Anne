@@ -2,7 +2,8 @@ import os, glob
 import pandas as pd
 import numpy as np
 from tqdm import tqdm
-
+import time
+from scipy.io import loadmat
 def sum_matrix(source_file):
     df_dict = pd.read_excel(source_file, sheet_name=None, index_col=0, header=3)
     try:
@@ -95,26 +96,36 @@ if __name__ == "__main__":
     xl = pd.read_excel(
         r"\\10.99.68.54\Digital pathology image lib\HubMap Skin TMC project\240418_DLTL_master\DLTL_version_list_241007.xlsx")
     dltlids = xl.sort_values('Model_ID')
+    dltlids = dltlids['Model_ID']
     # models that has condition defined but yet has score
     # dltlids = dltlids['Model_ID'][dltlids['se_radius'].notnull() & dltlids['f1score'].isnull()]
 
     metrics = []
     for dltlid in tqdm(dltlids): #iterate deep learning model versions
+        # define input and output path
+        src = r'\\10.99.68.54\Digital pathology image lib\HubMap Skin TMC project\240418_DLTL_master\DLTL_v{dltlid:d}\TrainCNN MDL\performance metrics'.format(
+            dltlid=dltlid)
+        source_file = glob.glob(os.path.join(src, '*net_*-01_trainingConfusionMetric.xlsx'))
+        if len(source_file) <1:
+            metrics.append([dltlid,'noxl','noxl','noxl','noxl','noxl','noxl','noxl','noxl'])
+            continue
+        # execute the conversion
+        metric = confusion_matrix_2_metrics(source_file[0])
+
+        # attach metadata
+        pth = r"\\10.99.68.54\Digital pathology image lib\HubMap Skin TMC project\240418_DLTL_master\DLTL_v{dltlid:d}\dltlRunParam.mat"
+        mat = loadmat(pth)
+        trainingtime = mat['tEnd']
         try:
-            # define input and output path
-            src = r'\\10.99.68.54\Digital pathology image lib\HubMap Skin TMC project\240418_DLTL_master\DLTL_v{dltlid:d}\TrainCNN MDL\performance metrics'.format(
-                dltlid=dltlid)
-            source_file = glob.glob(os.path.join(src, 'net_*-01_trainingConfusionMetric.xlsx'))
-            if len(source_file) <1:
-                metrics.append([dltlid, 'noxl', 'noxl', 'noxl', 'noxl'])
-            source_file = source_file[0]
-            # execute the conversion
-            metric = confusion_matrix_2_metrics(source_file)
-            metrics.append([dltlid]+metric)
+            computername = mat['computername']
         except:
-            metrics.append([dltlid, 0, 0, 0, 0])
+            computername = 'none'
+        windowtime = time.ctime(os.path.getctime(source_file[0]))
+        unixtime = os.path.getctime(source_file[0])
+        metrics.append([dltlid, trainingtime, computername,windowtime,unixtime]+metric)
+
 
         # dst = os.path.join(src, 'output')
         # if not os.path.exists(dst): os.mkdir(dst)
     # save as a csv for summary
-    pd.DataFrame(metrics).to_csv('tmp.csv', index=False)
+    pd.DataFrame(metrics,columns=['dltlid','trainingtime','computername','wintime','unixtime','p_train','r_train','p_test','r_test']).to_csv('tmp.csv',index=False)
